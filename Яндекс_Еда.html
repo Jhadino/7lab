@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Доставка еды - Яндекс_Еда</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+        
+        .cart-btn, .login-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.3s;
+        }
+        
+        .cart-btn:hover, .login-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .cart-count {
+            background: #ff4757;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        
+        /* Search Section */
+        .search-section {
+            margin: 30px 0;
+            text-align: center;
+        }
+        
+        .search-box {
+            width: 100%;
+            max-width: 600px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 30px;
+            font-size: 16px;
+            outline: none;
+            transition: border 0.3s;
+        }
+        
+        .search-box:focus {
+            border-color: #ee5a24;
+        }
+        
+        /* Categories */
+        .categories {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 0;
+            margin-bottom: 30px;
+        }
+        
+        .category-btn {
+            padding: 10px 20px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+        
+        .category-btn.active {
+            background: #ee5a24;
+            color: white;
+            border-color: #ee5a24;
+        }
+        
+        .category-btn:hover {
+            border-color: #ee5a24;
+        }
+        
+        /* Restaurants Grid */
+        .section-title {
+            font-size: 24px;
+            margin: 30px 0 20px;
+            color: #333;
+        }
+        
+        .restaurants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .restaurant-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .restaurant-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .restaurant-image {
+            height: 180px;
+            background: linear-gradient(135deg, #ffd89b, #19547b);
+            position: relative;
+        }
+        
+        .restaurant-rating {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255,255,255,0.9);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .restaurant-info {
+            padding: 20px;
+        }
+        
+        .restaurant-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .restaurant-details {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .restaurant-delivery {
+            display: flex;
+            justify-content: space-between;
+            color: #ee5a24;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        /* Cart Modal */
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 400px;
+            height: 100%;
+            background: white;
+            box-shadow: -5px 0 20px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .cart-header {
+            background: #ee5a24;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .close-cart {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .cart-items {
+            padding: 20px;
+            max-height: calc(100% - 200px);
+            overflow-y: auto;
+        }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-total {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 20px;
+            background: white;
+            border-top: 2px solid #eee;
+        }
+        
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            background: #ee5a24;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        /* Order Status */
+        .status-tracker {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            display: none;
+        }
+        
+        .status-steps {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin: 30px 0;
+        }
+        
+        .status-steps::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #ddd;
+            z-index: 1;
+        }
+        
+        .status-step {
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border: 3px solid #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            transition: all 0.3s;
+        }
+        
+        .status-step.active .step-icon {
+            background: #ee5a24;
+            border-color: #ee5a24;
+            color: white;
+        }
+        
+        /* Footer */
+        .footer {
+            background: #333;
+            color: white;
+            padding: 40px 0;
+            margin-top: 50px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 20px;
+            color: #ee5a24;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .restaurants-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .categories {
+                padding: 10px;
+            }
+            
+            .cart-modal {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="container header-content">
+            <div class="logo">
+                <span class="logo-icon"></span>
+                Яндекс_Еда
+            </div>
+            <div class="header-actions">
+                <button class="cart-btn" onclick="toggleCart()">
+                    🛒 Корзина <span class="cart-count">2</span>
+                </button>
+                <button class="login-btn">
+                    👤 Войти
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="container">
+
+        <div class="search-section">
+            <input type="text" class="search-box" placeholder="🔍 Поиск ресторанов или блюд...">
+        </div>
+
+        <div class="categories">
+            <button class="category-btn active">Все</button>
+            <button class="category-btn">🍕 Пицца</button>
+            <button class="category-btn">🍣 Суши</button>
+            <button class="category-btn">🍔 Бургеры</button>
+            <button class="category-btn">🍰 Десерты</button>
+            <button class="category-btn">🥗 Салаты</button>
+            <button class="category-btn">🍝 Паста</button>
+            <button class="category-btn">🥤 Напитки</button>
+        </div>
+
+
+        <h2 class="section-title">Рестораны рядом с вами</h2>
+        <div class="restaurants-grid">
+
+            <div class="restaurant-card" onclick="openRestaurant('pizza-plus')">
+                <div class="restaurant-image">
+                    <div class="restaurant-rating">★ 4.5</div>
+                </div>
+                <div class="restaurant-info">
+                    <div class="restaurant-name">
+                        <span>ТИК-ТАЙМ</span>
+                        <span>🍕</span>
+                    </div>
+                    <div class="restaurant-details">
+                        Пицца, паста, салаты, итальянская кухня
+                    </div>
+                    <div class="restaurant-delivery">
+                        <span>30-40 мин</span>
+                        <span>Доставка: 100₽</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="restaurant-card" onclick="openRestaurant('sushi-vesla')">
+                <div class="restaurant-image" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);">
+                    <div class="restaurant-rating">★ 4.7</div>
+                </div>
+                <div class="restaurant-info">
+                    <div class="restaurant-name">
+                        <span>Суши клаб</span>
+                        <span>🍣</span>
+                    </div>
+                    <div class="restaurant-details">
+                        Суши, роллы, WOK, японская кухня
+                    </div>
+                    <div class="restaurant-delivery">
+                        <span>40-50 мин</span>
+                        <span style="color: #00b894;">Бесплатная доставка</span>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="restaurant-card" onclick="openRestaurant('burger-kingdom')">
+                <div class="restaurant-image" style="background: linear-gradient(135deg, #f6d365, #fda085);">
+                    <div class="restaurant-rating">★ 4.3</div>
+                </div>
+                <div class="restaurant-info">
+                    <div class="restaurant-name">
+                        <span>BURGER KING</span>
+                        <span>🍔</span>
+                    </div>
+                    <div class="restaurant-details">
+                        Бургеры, картофель фри, напитки
+                    </div>
+                    <div class="restaurant-delivery">
+                        <span>25-35 мин</span>
+                        <span>Доставка: 80₽</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-tracker" id="orderTracker">
+            <h2>Статус вашего заказа #FD-2024-001</h2>
+            <div class="status-steps">
+                <div class="status-step active">
+                    <div class="step-icon">📋</div>
+                    <div>Заказ принят</div>
+                </div>
+                <div class="status-step active">
+                    <div class="step-icon">👨‍🍳</div>
+                    <div>Готовится</div>
+                </div>
+                <div class="status-step">
+                    <div class="step-icon">🚗</div>
+                    <div>В пути</div>
+                </div>
+                <div class="status-step">
+                    <div class="step-icon">✅</div>
+                    <div>Доставлен</div>
+                </div>
+            </div>
+            <p>Примерное время доставки: <strong>19:45</strong></p>
+            <button class="checkout-btn" onclick="trackOrder()">📡 Отслеживать на карте</button>
+        </div>
+    </div>
+
+
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-header">
+            <h2>🛒 Ваша корзина</h2>
+            <button class="close-cart" onclick="toggleCart()">×</button>
+        </div>
+        <div class="cart-items">
+            <div class="cart-item">
+                <div>
+                    <strong>Пепперони</strong>
+                    <div style="font-size: 14px; color: #666;">ТИК-ТАЙМ</div>
+                </div>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">-</button>
+                        <span>1</span>
+                        <button style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">+</button>
+                        <span style="font-weight: bold; margin-left: 20px;">550₽</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cart-item">
+                <div>
+                    <strong>Маргарита</strong>
+                    <div style="font-size: 14px; color: #666;">ТИК-ТАЙМ</div>
+                </div>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <button style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">-</button>
+                        <span>1</span>
+                        <button style="padding: 5px 10px; border: 1px solid #ddd; border-radius: 5px; cursor: pointer;">+</button>
+                        <span style="font-weight: bold; margin-left: 20px;">450₽</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="cart-total">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                <span>Еда:</span>
+                <span>1000₽</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <span>Доставка:</span>
+                <span>100₽</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; margin-bottom: 10px;">
+                <span>Итого:</span>
+                <span>1100₽</span>
+            </div>
+            <button class="checkout-btn" onclick="checkout()">Перейти к оформлению</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="container footer-content">
+            <div class="footer-section">
+                <h3>Яндекс_Еда</h3>
+                <p>Доставка вкусной еды из лучших ресторанов вашего города.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Контакты</h3>
+                <p>📞 +7 (999) 999-99-99</p>
+            </div>
+            <div class="footer-section">
+                <h3>Информация</h3>
+                <p>О нас</p>
+                <p>Условия доставки</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        function toggleCart() {
+            const cartModal = document.getElementById('cartModal');
+            cartModal.style.display = cartModal.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function openRestaurant(restaurantId) {
+            alert(`Открывается страница ресторана: ${restaurantId}\n\nВ реальном приложении здесь будет переход на страницу с меню ресторана.`);
+            
+
+            document.getElementById('orderTracker').style.display = 'block';
+            window.scrollTo(0, document.getElementById('orderTracker').offsetTop - 100);
+        }
+
+        function checkout() {
+            alert('Переход на страницу оформления заказа\n\nЗдесь будут поля:\n- Адрес доставки\n- Время доставки\n- Способ оплаты\n- Комментарий к заказу');
+        }
+
+        function trackOrder() {
+            alert('Открывается карта с отслеживанием курьера\n\nВ реальном приложении здесь будет картаы и GPS-трекинг курьера.');
+        }
+
+
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', function() {1
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+
+        document.addEventListener('click', function(event) {
+            const cartModal = document.getElementById('cartModal');
+            const cartBtn = document.querySelector('.cart-btn');
+            
+            if (!cartModal.contains(event.target) && !cartBtn.contains(event.target)) {
+                cartModal.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
